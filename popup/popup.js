@@ -1,4 +1,6 @@
 const statusEl = document.getElementById("status");
+const themeToggleBtn = document.getElementById("themeToggle");
+const themeIconEl = document.getElementById("themeIcon");
 
 async function getActiveTab() {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -60,3 +62,25 @@ async function logOverloadEvent(state) {
   // Keep last 500 events so storage doesn't grow unbounded
   await chrome.storage.local.set({ overloadLog: overloadLog.slice(-500) });
 }
+
+// ---- Light / dark theme toggle (popup UI only) --------------------------
+
+function applyTheme(theme) {
+  const isLight = theme === "light";
+  document.body.classList.toggle("light-theme", isLight);
+  // Icon shows the mode you'd switch TO, matching the "sun = go light" convention
+  themeIconEl.textContent = isLight ? "dark_mode" : "light_mode";
+}
+
+async function initTheme() {
+  const { theme = "dark" } = await chrome.storage.local.get("theme");
+  applyTheme(theme);
+}
+
+themeToggleBtn.addEventListener("click", async () => {
+  const nextTheme = document.body.classList.contains("light-theme") ? "dark" : "light";
+  applyTheme(nextTheme);
+  await chrome.storage.local.set({ theme: nextTheme });
+});
+
+initTheme();
