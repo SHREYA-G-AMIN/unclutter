@@ -126,3 +126,26 @@ export async function POST(request) {
     );
   }
 }
+export default {
+  async fetch(request) {
+    if (request.method === "OPTIONS") {
+      return OPTIONS();
+    }
+
+    if (request.method === "GET") {
+      return GET();
+    }
+
+    if (request.method === "POST") {
+      return POST(request);
+    }
+
+    return json(
+      {
+        ok: false,
+        error: "Method not allowed.",
+      },
+      405,
+    );
+  },
+};
