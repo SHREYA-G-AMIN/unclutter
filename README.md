@@ -1,7 +1,8 @@
 # unclutter-
 **Unclutter is an AI-powered browser extension that transforms overwhelming webpages into calm, focused, and accessible experiences.**
 
-## Folde4r structure
+## 2. Folder structure
+```
 unclutter-extension/
 ├── manifest.json          # extension config — permissions, entry points
 ├── popup/
@@ -15,3 +16,4 @@ unclutter-extension/
 │   └── background.js      # service worker — seam for Person B's AI calls
 └── icons/
     └── icon16/48/128.png  # placeholder icons (swap with real design later)
+```
