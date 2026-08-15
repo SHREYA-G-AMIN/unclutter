@@ -1,5 +1,15 @@
 const API_BASE_URL = "https://unclutter-lyart.vercel.app";
 
+chrome.runtime.onInstalled.addListener(() => {
+  console.log("Unclutter installed.");
+
+  chrome.storage.local.get(["overloadLog"], (result) => {
+    if (!Array.isArray(result.overloadLog)) {
+      chrome.storage.local.set({ overloadLog: [] });
+    }
+  });
+});
+
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message.type !== "SIMPLIFY_CONTENT") {
     return false;

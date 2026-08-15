@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Unclutter</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <header class="topbar">
+    <span class="brand">Unclutter</span>
+    <span class="material-symbols-outlined header-icon">light_mode</span>
+  </header>
+
+  <main>
+    <div class="title-block">
+      <h1>How are you feeling?</h1>
+      <p>Select an option to adjust your browsing experience.</p>
+    </div>
+
+    <div class="state-grid">
+      <button class="state-btn" data-state="overwhelmed">
+        <span class="material-symbols-outlined icon icon-sage">water_drop</span>
+        <span class="label">I'm overwhelmed</span>
+      </button>
+      <button class="state-btn" data-state="eyes-hurt">
+        <span class="material-symbols-outlined icon icon-slate">visibility_off</span>
+        <span class="label">My eyes hurt</span>
+      </button>
+      <button class="state-btn" data-state="cant-focus">
+        <span class="material-symbols-outlined icon icon-sage">center_focus_strong</span>
+        <span class="label">I can't focus</span>
+      </button>
+      <button class="state-btn" data-state="sensory-overload">
+        <span class="material-symbols-outlined icon icon-slate">hearing</span>
+        <span class="label">Sensory overload</span>
+      </button>
+    </div>
+
+    <div class="section">
+      <h2 class="section-label">Always On</h2>
+      <div class="option-card">
+        <label class="toggle-row">
+          <span class="option-text">Dyslexia-friendly font</span>
+          <span class="switch">
+            <input type="checkbox" id="dyslexiaFont" />
+            <span class="switch-track"><span class="switch-thumb"></span></span>
+          </span>
+        </label>
+        <div class="divider"></div>
+        <label class="toggle-row">
+          <span class="option-text">Read aloud</span>
+          <span class="switch">
+            <input type="checkbox" id="readAloud" checked />
+            <span class="switch-track"><span class="switch-thumb"></span></span>
+          </span>
+        </label>
+      </div>
+    </div>
+
+    <button id="resetBtn" class="reset-btn">
+      Reset to default
+    </button>
+
+    <div id="status" class="status"></div>
+  </main>
+
+  <script src="popup.js"></script>
+</body>
+</html>

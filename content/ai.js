@@ -168,9 +168,14 @@
   }
 
   chrome.runtime.onMessage.addListener((message) => {
-    if (message.type !== "SIMPLIFY_PAGE") {
-      return false;
-    }
+  if (message.type === "RESET") {
+    closeOverlay();
+    return false;
+  }
+
+  if (message.type !== "SIMPLIFY_PAGE") {
+    return false;
+  }
 
     const mode = message.mode || message.state;
     const page = extractPageContent();
