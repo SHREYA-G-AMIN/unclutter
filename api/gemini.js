@@ -1,3 +1,33 @@
+const RESPONSE_SCHEMA = {
+  type: "OBJECT",
+  properties: {
+    title: {
+      type: "STRING",
+    },
+    summary: {
+      type: "STRING",
+    },
+    keyPoints: {
+      type: "ARRAY",
+      items: {
+        type: "STRING",
+      },
+    },
+    nextStep: {
+      type: "STRING",
+    },
+    calmingNote: {
+      type: "STRING",
+    },
+  },
+  required: [
+    "title",
+    "summary",
+    "keyPoints",
+    "nextStep",
+    "calmingNote",
+  ],
+};
 export async function generateSimplification(prompt) {
   const apiKey = process.env.GEMINI_API_KEY;
   const model = process.env.GEMINI_MODEL || "gemini-3.5-flash";
@@ -26,6 +56,7 @@ export async function generateSimplification(prompt) {
         temperature: 0.2,
         maxOutputTokens: 1200,
         responseMimeType: "application/json",
+        responseSchema: RESPONSE_SCHEMA,
       },
     }),
     signal: AbortSignal.timeout(20000),

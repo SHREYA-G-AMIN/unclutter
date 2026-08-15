@@ -1,3 +1,6 @@
+import { generateSimplification } from "./gemini.js";
+import { buildSimplificationPrompt } from "./prompts.js";
+
 const ALLOWED_MODES = new Set([
   "overwhelmed",
   "cant-focus",
@@ -16,6 +19,39 @@ function json(data, status = 200) {
     status,
     headers: CORS_HEADERS,
   });
+}
+
+function cleanString(value) {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function normalizeResult(result, fallbackTitle) {
+  if (!result || typeof result !== "object") {
+    throw new Error("Gemini returned an invalid result.");
+  }
+
+  const normalized = {
+    title: cleanString(result.title) || fallbackTitle || "Simplified page",
+    summary: cleanString(result.summary),
+    keyPoints: Array.isArray(result.keyPoints)
+      ? result.keyPoints
+          .filter((point) => typeof point === "string" && point.trim())
+          .map((point) => point.trim())
+          .slice(0, 5)
+      : [],
+    nextStep: cleanString(result.nextStep),
+    calmingNote: cleanString(result.calmingNote),
+  };
+
+  if (
+    !normalized.summary ||
+    !normalized.keyPoints.length ||
+    !normalized.nextStep
+  ) {
+    throw new Error("Gemini response is missing required fields.");
+  }
+
+  return normalized;
 }
 
 export function OPTIONS() {
@@ -44,7 +80,7 @@ export async function POST(request) {
     );
   }
 
-  const { title = "", url = "", text, mode } = body ?? {};
+  const { title = "", text, mode } = body ?? {};
 
   if (typeof text !== "string" || !text.trim()) {
     return json(
@@ -60,16 +96,33 @@ export async function POST(request) {
     );
   }
 
+  const cleanedTitle = String(title).trim().slice(0, 300);
   const cleanedText = text.trim().slice(0, 12000);
 
-  return json({
-    ok: true,
-    message: "Simplification request accepted.",
-    input: {
-      title: String(title).slice(0, 300),
-      url: String(url).slice(0, 2000),
+  try {
+    const prompt = buildSimplificationPrompt({
+      title: cleanedTitle,
+      text: cleanedText,
       mode,
-      characters: cleanedText.length,
-    },
-  });
+    });
+
+    const generatedText = await generateSimplification(prompt);
+    const parsedResult = JSON.parse(generatedText);
+    const result = normalizeResult(parsedResult, cleanedTitle);
+
+    return json({
+      ok: true,
+      data: result,
+    });
+  } catch (error) {
+    console.error("Simplification failed:", error);
+
+    return json(
+      {
+        ok: false,
+        error: "Unable to simplify this page right now.",
+      },
+      502,
+    );
+  }
 }
