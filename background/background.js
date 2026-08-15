@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://YOUR-VERCEL-PROJECT.vercel.app";
+const API_BASE_URL = "https://unclutter-lyart.vercel.app";
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message.type !== "SIMPLIFY_CONTENT") {
