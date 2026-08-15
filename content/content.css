@@ -5,9 +5,9 @@
 }
 
 .unclutter-dim {
-  opacity: 0.15 !important;
+  opacity: 0.4 !important;
   pointer-events: none !important;
-  filter: grayscale(1) !important;
+  filter: grayscale(0.7) blur(0.3px) !important;
   transition: opacity 0.2s ease;
 }
 
@@ -62,4 +62,37 @@
   border-radius: 4px;
   cursor: pointer;
   font-size: 12px;
+}
+
+.unclutter-dim-overlay {
+  position: fixed; inset: 0; pointer-events: none;
+  z-index: 2147483646; background: #000; opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.unclutter-warmth-overlay {
+  position: fixed; inset: 0; pointer-events: none;
+  z-index: 2147483645; background: rgb(255, 166, 0);
+  mix-blend-mode: multiply; opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.unclutter-eye-panel {
+  position: fixed; bottom: 16px; right: 16px;
+  z-index: 2147483647; width: 220px;
+  background: #fff; border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  padding: 14px; font-family: sans-serif;
+}
+
+.unclutter-eye-panel h4 { font-size: 12px; margin-bottom: 10px; color: #333; }
+
+.unclutter-eye-row { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+.unclutter-eye-row label { font-size: 11px; color: #555; display: flex; justify-content: space-between; }
+.unclutter-eye-row input[type="range"] { width: 100%; }
+
+.unclutter-eye-close {
+  position: absolute; top: 8px; right: 10px;
+  background: none; border: none; cursor: pointer;
+  font-size: 14px; color: #999;
 }
