@@ -17,11 +17,11 @@
     "service_worker": "background/background.js"
   },
   "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["content/content.js"],
-      "css": ["content/content.css"],
-      "run_at": "document_idle"
-    }
-    ]   
+  {
+    "matches": ["<all_urls>"],
+    "js": ["content/content.js", "content/ai.js"],
+    "css": ["content/content.css", "content/ai.css"],
+    "run_at": "document_idle"
+  }
+] 
 }
