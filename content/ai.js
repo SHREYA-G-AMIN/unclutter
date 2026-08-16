@@ -347,8 +347,23 @@
   }
 
   function createOverlay() {
-    document.getElementById(OVERLAY_ID)?.remove();
+    const existingOverlay = document.getElementById(OVERLAY_ID);
     stopReader({ clearResult: true });
+
+    if (existingOverlay) {
+      existingOverlay.classList.remove("unclutter-dim", "unclutter-hidden");
+
+      const content = existingOverlay.querySelector(".unclutter-ai-content");
+      content.innerHTML = `
+        <div class="unclutter-ai-loader"></div>
+        <p>Adjusting this page for the selected mode…</p>
+      `;
+
+      chrome.storage.local.get(THEME_KEY, (stored) =>
+        applyTheme(stored[THEME_KEY]),
+      );
+      return existingOverlay;
+    }
 
     const overlay = document.createElement("div");
     overlay.id = OVERLAY_ID;
