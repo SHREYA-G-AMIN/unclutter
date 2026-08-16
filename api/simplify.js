@@ -54,6 +54,23 @@ function normalizeResult(result, fallbackTitle) {
   return normalized;
 }
 
+async function generateParsedResult(prompt) {
+  const firstResponse = await generateSimplification(prompt);
+
+  try {
+    return JSON.parse(firstResponse);
+  } catch (error) {
+    if (!(error instanceof SyntaxError)) {
+      throw error;
+    }
+
+    console.warn("Gemini returned malformed JSON. Retrying once.");
+
+    const retryResponse = await generateSimplification(prompt);
+    return JSON.parse(retryResponse);
+  }
+}
+
 export function OPTIONS() {
   return new Response(null, {
     status: 204,
@@ -106,8 +123,7 @@ export async function POST(request) {
       mode,
     });
 
-    const generatedText = await generateSimplification(prompt);
-    const parsedResult = JSON.parse(generatedText);
+    const parsedResult = await generateParsedResult(prompt);
     const result = normalizeResult(parsedResult, cleanedTitle);
 
     return json({
