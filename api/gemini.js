@@ -54,7 +54,7 @@ export async function generateSimplification(prompt) {
       ],
       generationConfig: {
         temperature: 0.2,
-        maxOutputTokens: 1200,
+        maxOutputTokens: 2400,
         responseMimeType: "application/json",
         responseSchema: RESPONSE_SCHEMA,
       },
@@ -71,7 +71,17 @@ export async function generateSimplification(prompt) {
 
   const data = await response.json();
 
-  const generatedText = data.candidates?.[0]?.content?.parts
+  const candidate = data.candidates?.[0];
+
+  if (!candidate) {
+    throw new Error("Gemini returned no response candidate.");
+  }
+
+  if (candidate.finishReason === "MAX_TOKENS") {
+    throw new Error("Gemini response was truncated.");
+  }
+
+  const generatedText = candidate.content?.parts
     ?.map((part) => part.text || "")
     .join("")
     .trim();
