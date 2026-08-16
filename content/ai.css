@@ -125,3 +125,64 @@
     border-radius: 18px;
   }
 }
+
+.unclutter-ai-reader {
+  display: grid;
+  grid-template-columns: auto auto minmax(150px, 1fr);
+  gap: 10px;
+  align-items: center;
+  margin-top: 26px;
+  padding: 14px;
+  border: 1px solid #cdd9d1;
+  border-radius: 12px;
+  background: #edf2ee;
+}
+
+.unclutter-ai-reader button,
+.unclutter-ai-reader select {
+  min-height: 40px;
+  padding: 8px 14px;
+  border: 1px solid #769b88;
+  border-radius: 9px;
+  background: #557565;
+  color: white;
+  font: inherit;
+  cursor: pointer;
+}
+
+.unclutter-ai-reader button:disabled,
+.unclutter-ai-reader select:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.unclutter-ai-reader label {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  color: #40564b;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+#unclutter-reader-status {
+  grid-column: 1 / -1;
+  color: #557565;
+  font-size: 13px;
+}
+
+@media (max-width: 600px) {
+  .unclutter-ai-reader {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .unclutter-ai-reader label,
+  #unclutter-reader-status {
+    grid-column: 1 / -1;
+  }
+
+  .unclutter-ai-reader label {
+    justify-content: space-between;
+  }
+}
