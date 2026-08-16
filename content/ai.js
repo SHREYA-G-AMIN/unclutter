@@ -4,6 +4,8 @@
 
   let currentResult = null;
   let currentUtterance = null;
+  let simplificationInProgress = false;
+  let activeRequestId = 0;
   let readerState = {
     available: false,
     status: "idle",
@@ -312,6 +314,34 @@
     publishReaderState();
   }
 
+  function buildFallbackResult(page) {
+    const sentences = page.text
+      .split(/(?<=[.!?])\s+/)
+      .map((sentence) => sentence.trim())
+      .filter((sentence) => sentence.length > 20);
+
+    const summary =
+      sentences.slice(0, 2).join(" ").slice(0, 400) ||
+      page.text.slice(0, 400);
+
+    const keyPoints = sentences
+      .slice(2, 7)
+      .map((sentence) => sentence.slice(0, 220));
+
+    if (!keyPoints.length) {
+      keyPoints.push(page.text.slice(0, 220));
+    }
+
+    return {
+      title: page.title || "Calm reading mode",
+      summary,
+      keyPoints,
+      nextStep: "Focus on the first key point and continue when you feel ready.",
+      calmingNote:
+        "AI is temporarily busy, so Unclutter is showing a calm local version.",
+    };
+  }
+
   function showError(message) {
     const overlay =
       document.getElementById(OVERLAY_ID) || createOverlay();
@@ -332,6 +362,8 @@
 
   chrome.runtime.onMessage.addListener((message) => {
     if (message.type === "RESET") {
+      activeRequestId += 1;
+      simplificationInProgress = false;
       closeOverlay();
       return false;
     }
@@ -355,12 +387,19 @@
       return false;
     }
 
+    if (simplificationInProgress) {
+      return false;
+    }
+
     const mode = message.mode || message.state;
     const page = extractPageContent();
+    const requestId = ++activeRequestId;
 
+    simplificationInProgress = true;
     createOverlay();
 
     if (!page.text) {
+      simplificationInProgress = false;
       showError("No readable page content was found.");
       return false;
     }
@@ -374,16 +413,14 @@
         },
       },
       (response) => {
-        if (chrome.runtime.lastError) {
-          showError("The AI service could not be reached.");
+        if (requestId !== activeRequestId) {
           return;
         }
 
-        if (!response?.ok) {
-          showError(
-            response?.error ||
-              "AI simplification is temporarily unavailable.",
-          );
+        simplificationInProgress = false;
+
+        if (chrome.runtime.lastError || !response?.ok) {
+          showResult(buildFallbackResult(page));
           return;
         }
 
