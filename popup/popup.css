@@ -11,11 +11,20 @@
   --outline-variant: #424842;
   --sage-muted: #6b7a6f;
   --slate-muted: #5e6c75;
+  --sage-bright: #bfe6c8;
+  --slate-bright: #a9d3e0;
   --on-primary: #121412;
+  --label-bright: #ffffff;
+}
+
+html {
+  width: 400px;
+  overflow-x: hidden;
 }
 
 body {
-  width: 320px;
+  width: 400px;
+  overflow-x: hidden;
   background:
     radial-gradient(at 0% 0%, rgb(141, 161, 146) 0px, transparent 50%),
     radial-gradient(at 100% 0%, rgb(93, 115, 126) 0px, transparent 50%),
@@ -41,7 +50,10 @@ body.light-theme {
   --outline-variant: #cfd3ce;
   --sage-muted: #4c6a56;
   --slate-muted: #3d5765;
+  --sage-bright: #2e6a45;
+  --slate-bright: #2a5e73;
   --on-primary: #ffffff;
+  --label-bright: #16281c;
 
   background:
     radial-gradient(at 0% 0%, rgba(141, 161, 146, 0.35) 0px, transparent 50%),
@@ -58,6 +70,7 @@ body.light-theme .topbar {
 
 body.light-theme .state-btn,
 body.light-theme .option-card,
+body.light-theme .reader-card,
 body.light-theme .reset-btn {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
@@ -66,8 +79,8 @@ body.light-theme .reset-btn {
   position: sticky;
   top: 0;
   z-index: 10;
-  height: 48px;
-  padding: 0 20px;
+  height: 52px;
+  padding: 0 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -78,11 +91,27 @@ body.light-theme .reset-btn {
 }
 
 .brand {
-  font-weight: 700;
-  font-size: 12px;
-  letter-spacing: 0.15em;
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--sage-muted);
+  color: var(--label-bright);
+  text-shadow: 0 0 12px rgba(191, 230, 200, 0.35);
+  position: relative;
+  padding-left: 14px;
+}
+
+.brand::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--sage-bright), var(--slate-bright));
+  box-shadow: 0 0 6px 1px rgba(191, 230, 200, 0.55);
 }
 
 .header-icon {
@@ -98,24 +127,29 @@ body.light-theme .reset-btn {
   border: none;
   padding: 0;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s, transform 0.1s;
+  transition: background 0.15s, color 0.15s, transform 0.15s, box-shadow 0.15s;
 }
 
 .header-icon:hover {
   background: var(--sage-muted);
   color: var(--on-primary);
+  box-shadow: 0 0 0 4px rgba(191, 230, 200, 0.12);
 }
 
-.header-icon:active { transform: scale(0.92); }
+.header-icon:active { transform: scale(0.9); }
 
-main { padding: 20px; }
+main {
+  width: 100%;
+  padding: 20px;
+  overflow-x: hidden;
+}
 
 .title-block { margin-bottom: 20px; }
 
 .title-block h1 {
   font-weight: 700;
-  font-size: 22px;
-  line-height: 28px;
+  font-size: 21px;
+  line-height: 27px;
   letter-spacing: -0.01em;
   color: var(--on-surface);
   margin-bottom: 4px;
@@ -132,6 +166,7 @@ main { padding: 20px; }
   grid-template-columns: 1fr 1fr;
   gap: 12px;
   margin-bottom: 24px;
+  width: 100%;
 }
 
 .state-btn {
@@ -140,29 +175,39 @@ main { padding: 20px; }
   align-items: center;
   justify-content: center;
   gap: 10px;
+  width: 100%;
   padding: 16px 8px;
   background: var(--surface-container);
   border: 1px solid var(--surface-container-highest);
   border-radius: 12px;
   cursor: pointer;
-  transition: transform 0.15s, background 0.15s, border-color 0.15s;
+  transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
   color: var(--on-surface);
 }
 
 .state-btn:hover {
   transform: translateY(-2px);
   background: var(--surface-container-high);
+  border-color: var(--sage-muted);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
 }
 
-.state-btn:active { transform: scale(0.98); }
+.state-btn:focus-visible {
+  outline: 2px solid var(--sage-bright);
+  outline-offset: 2px;
+}
+
+.state-btn:active { transform: scale(0.97); }
 
 .state-btn .icon {
   font-size: 26px;
-  transition: color 0.15s;
+  transition: color 0.15s, transform 0.15s;
 }
 
-.icon-sage { color: var(--sage-muted); }
-.icon-slate { color: var(--slate-muted); }
+.state-btn:hover .icon { transform: scale(1.08); }
+
+.icon-sage { color: var(--sage-bright); }
+.icon-slate { color: var(--slate-bright); }
 
 .state-btn .label {
   font-weight: 600;
@@ -173,30 +218,38 @@ main { padding: 20px; }
 
 .state-btn.active {
   border-color: var(--sage-muted);
-  background: var(--sage-muted);
-  color: var(--on-primary);
+  background: linear-gradient(135deg, var(--sage-muted), var(--slate-muted));
+  color: var(--label-bright);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
 }
 
 .state-btn.active .icon {
-  color: var(--on-primary);
+  color: var(--label-bright);
 }
 
 .section { margin-bottom: 20px; }
 
 .section-label {
-  font-weight: 600;
+  font-weight: 700;
   font-size: 12px;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--sage-muted);
+  color: var(--label-bright);
   margin-bottom: 12px;
+  opacity: 0.92;
 }
 
 .option-card {
+  width: 100%;
   background: var(--surface-container);
   border: 1px solid var(--surface-container-highest);
   border-radius: 12px;
   padding: 4px 14px;
+  transition: border-color 0.15s ease;
+}
+
+.option-card:hover {
+  border-color: var(--sage-muted);
 }
 
 .toggle-row {
@@ -214,7 +267,7 @@ main { padding: 20px; }
 }
 
 .toggle-row:hover .option-text {
-  color: var(--sage-muted);
+  color: var(--sage-bright);
 }
 
 .divider {
@@ -228,6 +281,7 @@ main { padding: 20px; }
   align-items: center;
   width: 44px;
   height: 24px;
+  flex-shrink: 0;
 }
 
 .switch input {
@@ -245,7 +299,7 @@ main { padding: 20px; }
   height: 100%;
   background: var(--surface-container-highest);
   border-radius: 999px;
-  transition: background 0.2s;
+  transition: background 0.2s ease;
   display: flex;
   align-items: center;
 }
@@ -257,16 +311,21 @@ main { padding: 20px; }
   background: var(--on-surface);
   border-radius: 999px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-  transition: transform 0.2s, background 0.2s;
+  transition: transform 0.2s ease, background 0.2s ease;
 }
 
 .switch input:checked ~ .switch-track {
-  background: var(--sage-muted);
+  background: linear-gradient(135deg, var(--sage-muted), var(--slate-muted));
 }
 
 .switch input:checked ~ .switch-track .switch-thumb {
   transform: translateX(20px);
   background: var(--on-primary);
+}
+
+.switch input:focus-visible ~ .switch-track {
+  outline: 2px solid var(--sage-bright);
+  outline-offset: 2px;
 }
 
 .reset-btn {
@@ -283,56 +342,79 @@ main { padding: 20px; }
   font-weight: 600;
   font-size: 13.5px;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
   margin-top: 4px;
 }
 
-.reset-btn:hover { background: var(--surface-container-high); }
+.reset-btn:hover {
+  background: var(--surface-container-high);
+  border-color: var(--sage-muted);
+}
 .reset-btn:active { transform: scale(0.98); }
 
 .status {
   margin-top: 12px;
   text-align: center;
   font-size: 12px;
-  color: var(--sage-muted);
+  color: var(--sage-bright);
   min-height: 16px;
 }
 
 .reader-card {
+  width: 100%;
   padding: 14px;
   border: 1px solid var(--surface-container-highest);
   border-radius: 12px;
   background: var(--surface-container);
+  transition: border-color 0.15s ease;
+}
+
+.reader-card:hover {
+  border-color: var(--sage-muted);
 }
 
 .reader-buttons {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
+  width: 100%;
 }
 
 .reader-btn,
 .speed-control select {
   min-height: 36px;
+  width: 100%;
   border: 1px solid var(--outline-variant);
   border-radius: 9px;
-  color: var(--on-surface);
-  background: var(--sage-muted);
-  font: 600 12px "Manrope", sans-serif;
+  color: var(--label-bright);
+  background: linear-gradient(135deg, var(--sage-muted), var(--slate-muted));
+  font: 700 12px "Manrope", sans-serif;
+  transition: transform 0.12s ease, filter 0.15s ease, box-shadow 0.15s ease;
 }
 
 .reader-btn {
   cursor: pointer;
 }
 
+.reader-btn:not(:disabled):hover {
+  filter: brightness(1.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.reader-btn:not(:disabled):active {
+  transform: scale(0.96);
+}
+
 .reader-btn-secondary {
   background: var(--surface-container-high);
+  color: var(--on-surface);
 }
 
 .reader-btn:disabled,
 .speed-control select:disabled {
   cursor: not-allowed;
-  opacity: 0.45;
+  opacity: 0.4;
+  filter: none;
 }
 
 .speed-control {
@@ -347,8 +429,13 @@ main { padding: 20px; }
 
 .speed-control select {
   min-height: 32px;
+  width: auto;
   padding: 0 28px 0 10px;
   cursor: pointer;
+}
+
+.speed-control select:not(:disabled):hover {
+  filter: brightness(1.15);
 }
 
 .reader-status {
