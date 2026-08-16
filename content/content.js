@@ -96,11 +96,22 @@ function applyCantFocus() {
   const main = findMainContent();
 
   qsa("body > *").forEach((el) => {
-    if (el === main || el.contains(main) || main.contains(el)) return;
+    if (
+      el.id === "unclutter-ai-overlay" ||
+      el === main ||
+      el.contains(main) ||
+      main.contains(el)
+    ) {
+      return;
+    }
+
     el.classList.add("unclutter-dim");
   });
 
-  document.documentElement.classList.add("unclutter-no-animation");
+  document.documentElement.classList.add(
+    "unclutter-no-animation",
+    "unclutter-calm-bg",
+  );
   const next = findNextStep(main);
   if (next) next.classList.add("unclutter-highlight-next");
 }
