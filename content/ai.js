@@ -46,19 +46,43 @@
           "textarea",
           "select",
           "button",
+          "table",
           "[hidden]",
           "[aria-hidden='true']",
+          "[role='navigation']",
+          "[aria-label*='language']",
+          "[class*='language']",
           "[class*='advert']",
           "[class*='popup']",
           "[class*='cookie']",
           "[class*='newsletter']",
+          ".vector-header",
+          ".vector-column-start",
+          ".vector-column-end",
+          ".mw-portlet",
+          ".mw-editsection",
+          ".navbox",
+          ".sidebar",
+          ".infobox",
+          ".hatnote",
+          ".metadata",
+          "sup.reference",
         ].join(","),
       )
       .forEach((element) => element.remove());
 
-    const text = (clone.innerText || clone.textContent || "")
+    const blocks = Array.from(clone.querySelectorAll("h1, h2, h3, p, li"))
+      .map((element) =>
+        (element.textContent || "").replace(/\s+/g, " ").trim(),
+      )
+      .filter((block) => block.length >= 40 && block.length <= 800)
+      .filter((block, index, items) => items.indexOf(block) === index);
+
+    const fallbackText = (clone.textContent || "")
       .replace(/\s+/g, " ")
-      .trim()
+      .trim();
+
+    const text = (blocks.length ? blocks.join("\n") : fallbackText)
       .slice(0, 12000);
 
     return {
@@ -315,28 +339,25 @@
   }
 
   function buildFallbackResult(page) {
-    const sentences = page.text
-      .split(/(?<=[.!?])\s+/)
-      .map((sentence) => sentence.trim())
-      .filter((sentence) => sentence.length > 20);
+    const blocks = page.text
+      .split(/\n+/)
+      .map((block) => block.trim())
+      .filter((block) => block.length >= 40);
 
-    const summary =
-      sentences.slice(0, 2).join(" ").slice(0, 400) ||
-      page.text.slice(0, 400);
-
-    const keyPoints = sentences
-      .slice(2, 7)
-      .map((sentence) => sentence.slice(0, 220));
+    const summary = (blocks[0] || page.text).slice(0, 400);
+    const keyPoints = blocks.slice(1, 6).map((block) => block.slice(0, 240));
 
     if (!keyPoints.length) {
-      keyPoints.push(page.text.slice(0, 220));
+      keyPoints.push(page.text.slice(0, 240));
     }
 
     return {
-      title: page.title || "Calm reading mode",
+      title:
+        page.title.replace(/\s*[-–—]\s*Wikipedia.*$/i, "").trim() ||
+        "Calm reading mode",
       summary,
       keyPoints,
-      nextStep: "Focus on the first key point and continue when you feel ready.",
+      nextStep: "Start with the first key point and continue when you feel ready.",
       calmingNote:
         "AI is temporarily busy, so Unclutter is showing a calm local version.",
     };
