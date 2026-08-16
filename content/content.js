@@ -1,9 +1,3 @@
-// ============================================================
-// Unclutter — content script
-// Runs on every page. Listens for messages from the popup and
-// transforms the live DOM based on the selected cognitive state.
-// ============================================================
-
 const CLUTTER_SELECTORS = [
   "nav", "aside", "footer",
   "[class*='ad-']", "[id*='ad-']", "[class*='advert']",
@@ -15,7 +9,6 @@ const CLUTTER_SELECTORS = [
 
 let speaking = false;
 
-// ---- Utilities -------------------------------------------------
 
 function qsa(selector, root = document) {
   return Array.from(root.querySelectorAll(selector));
@@ -26,10 +19,7 @@ function isVisible(el) {
   return rect.width > 0 && rect.height > 0;
 }
 
-// Finds the most likely "main content" block on the page.
-// Prefers semantic containers, excludes nav/header/footer, and
-// falls back to scoring divs by paragraph density (penalizing
-// link-heavy blocks, which are usually navigation, not content).
+
 function findMainContent() {
   const excludeSelector = "nav, header, footer, aside, [role='navigation'], [role='banner']";
 
@@ -54,8 +44,6 @@ function findMainContent() {
   return scored[0]?.el || document.body;
 }
 
-// Finds the most likely "next important step" — first visible
-// button, primary link, or CTA-looking element inside main content.
 function findNextStep(mainEl) {
   const ctaSelectors = "button, a.btn, a.button, [class*='cta'], input[type='submit']";
   const candidates = qsa(ctaSelectors, mainEl).filter(isVisible);
@@ -65,7 +53,6 @@ function findNextStep(mainEl) {
   return heading || null;
 }
 
-// ---- State handlers ---------------------------------------------
 
 function clearAll() {
   qsa(".unclutter-hidden").forEach((el) => el.classList.remove("unclutter-hidden"));
@@ -130,13 +117,9 @@ function applySensoryOverload() {
   qsa("img").forEach((el) => el.classList.add("unclutter-dim"));
 }
 
-// ---- Dyslexia font -------------------------------------------------
-
 function setDyslexiaFont(enabled) {
   document.documentElement.classList.toggle("unclutter-dyslexia-font", enabled);
 }
-
-// ---- Eye comfort panel (dim + warmth sliders) -----------------------
 
 function showEyeComfortPanel() {
   removeEyeComfortPanel(); // avoid duplicates
@@ -187,8 +170,6 @@ function removeEyeComfortPanel() {
   document.getElementById("unclutter-warmth-overlay")?.remove();
 }
 
-// ---- Read aloud (Web Speech API) ------------------------------------
-
 function startReadAloud() {
   const main = findMainContent();
   const text = main.innerText.slice(0, 6000); // cap for demo safety
@@ -224,8 +205,6 @@ function showReadingOverlay() {
 function removeReadingOverlay() {
   document.getElementById("unclutter-reading-bar")?.remove();
 }
-
-// ---- Message listener -------------------------------------------------
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   switch (message.type) {

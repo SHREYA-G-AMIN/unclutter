@@ -1,21 +1,58 @@
-// Background service worker (Manifest V3).
-// Currently minimal — this is the seam where Person B's AI
-// simplification calls will eventually be triggered from,
-// since content scripts can't always make cross-origin fetches
-// as reliably as the background worker can.
+const API_BASE_URL = "https://unclutter-lyart.vercel.app";
 
 chrome.runtime.onInstalled.addListener(() => {
   console.log("Unclutter installed.");
-  chrome.storage.local.set({ overloadLog: [] });
+
+  chrome.storage.local.get(["overloadLog"], (result) => {
+    if (!Array.isArray(result.overloadLog)) {
+      chrome.storage.local.set({ overloadLog: [] });
+    }
+  });
 });
 
-// Placeholder: Person B will add a listener here like:
-//
-// chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-//   if (message.type === "SIMPLIFY_TEXT") {
-//     fetch("https://api.anthropic.com/v1/messages", { ... })
-//       .then(res => res.json())
-//       .then(data => sendResponse({ simplified: data }));
-//     return true; // keep the message channel open for async response
-//   }
-// });
+chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  if (message.type !== "SIMPLIFY_CONTENT") {
+    return false;
+  }
+
+  simplifyContent(message.payload)
+    .then((data) => {
+      sendResponse({
+        ok: true,
+        data,
+      });
+    })
+    .catch((error) => {
+      console.error("Unclutter AI request failed:", error);
+
+      sendResponse({
+        ok: false,
+        error: "AI simplification is temporarily unavailable.",
+      });
+    });
+
+  return true;
+});
+
+async function simplifyContent(payload) {
+  if (!payload?.text || !payload?.mode) {
+    throw new Error("Missing webpage content or wellness mode.");
+  }
+
+  const response = await fetch(`${API_BASE_URL}/api/simplify`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+    signal: AbortSignal.timeout(25000),
+  });
+
+  const result = await response.json();
+
+  if (!response.ok || !result.ok) {
+    throw new Error(result.error || "Simplification request failed.");
+  }
+
+  return result.data;
+}
