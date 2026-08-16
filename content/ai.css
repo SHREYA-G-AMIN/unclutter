@@ -306,9 +306,11 @@
 }
 
 .unclutter-reader-segment-active {
-  background: #ffe995;
-  box-shadow: 0 0 0 4px rgba(255, 213, 79, 0.3);
-  color: #1f2d27;
+  background: #ffe995 !important;
+  box-shadow: 0 0 0 4px rgba(255, 213, 79, 0.3) !important;
+  color: #1f2d27 !important;
+  -webkit-text-fill-color: #1f2d27 !important;
+  text-shadow: none !important;
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
 }
