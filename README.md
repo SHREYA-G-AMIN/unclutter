@@ -249,14 +249,7 @@ AI development tools were also used during planning, prototyping and debugging. 
 * Secured the Gemini API key using Vercel environment variables
 * Tested and debugged the complete extension and AI workflow
 
-## Credits
 
-Unclutter uses the following technologies and resources:
-
-* Google Gemini API
-* Vercel
-* Chrome Extensions Manifest V3
-* Chrome Storage and Messaging APIs
 * Web Speech API
 * Google Fonts
 * Material Symbols
