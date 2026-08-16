@@ -5,10 +5,10 @@
 }
 
 .unclutter-dim {
-  opacity: 0.4 !important;
+  opacity: 0.6 !important;
   pointer-events: none !important;
-  filter: grayscale(0.7) blur(0.3px) !important;
-  transition: opacity 0.2s ease;
+  filter: grayscale(0.35) !important;
+  transition: opacity 0.2s ease, filter 0.2s ease;
 }
 
 .unclutter-no-animation, .unclutter-no-animation * {
