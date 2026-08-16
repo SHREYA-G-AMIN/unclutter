@@ -41,12 +41,6 @@ body {
   transition: background 0.25s ease, color 0.25s ease;
 }
 
-/* ---- Light theme (toggled via #themeToggle in popup.js) ----
-   A warm, cream-based palette: sage green + dusty rose + soft gold,
-   grounded by a warm charcoal for text. Every accent below flows
-   through variables already used across the whole stylesheet, so
-   redefining them here is enough to recolor buttons, icons, and
-   glows — nothing outside body.light-theme is touched. */
 body.light-theme {
   --background: #fbf3ee;
   --surface-container-low: #f7ebe3;
@@ -539,10 +533,6 @@ main {
   filter: brightness(1.15);
 }
 
-/* The dropdown's own popup list is rendered by the OS, not by our
-   CSS, so the gradient/theme styling above never reaches it — it
-   always shows on a plain white list background. Force bold black
-   text on the options so they stay readable there. */
 .speed-control select option {
   background: #ffffff;
   color: #1a1a1a;

@@ -156,11 +156,6 @@ function showEyeComfortPanel() {
   document.getElementById("unclutter-eye-close").addEventListener("click", removeEyeComfortPanel);
 }
 
-// A filter on <body> composites its ENTIRE rendered subtree as one unit —
-// so anything added inside body afterward (the AI summary card included)
-// is automatically covered too. This is what the old overlay-div approach
-// couldn't guarantee, since a later-added sibling can render above a
-// same-z-index overlay regardless of how high that z-index is.
 function applyEyeFilter() {
   const dimSlider = document.getElementById("unclutter-dim-slider");
   const warmthSlider = document.getElementById("unclutter-warmth-slider");
