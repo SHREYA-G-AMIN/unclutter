@@ -1,7 +1,12 @@
 (() => {
   const OVERLAY_ID = "unclutter-ai-overlay";
   const READER_STATE_KEY = "aiReaderState";
+  const THEME_KEY = "theme";
 
+  const SUN_ICON = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"></circle><line x1="12" y1="2.5" x2="12" y2="4.5"></line><line x1="12" y1="19.5" x2="12" y2="21.5"></line><line x1="4.2" y1="4.2" x2="5.6" y2="5.6"></line><line x1="18.4" y1="18.4" x2="19.8" y2="19.8"></line><line x1="2.5" y1="12" x2="4.5" y2="12"></line><line x1="19.5" y1="12" x2="21.5" y2="12"></line><line x1="4.2" y1="19.8" x2="5.6" y2="18.4"></line><line x1="18.4" y1="5.6" x2="19.8" y2="4.2"></line></svg>`;
+  const MOON_ICON = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.2A8.5 8.5 0 1 1 9.8 3.5a6.7 6.7 0 0 0 10.7 10.7z"></path></svg>`;
+
+  let currentTheme = "dark";
   let currentResult = null;
   let currentUtterance = null;
   let readerState = {
@@ -208,6 +213,31 @@
     }
   }
 
+  function applyTheme(theme) {
+    currentTheme = theme === "light" ? "light" : "dark";
+    const overlay = document.getElementById(OVERLAY_ID);
+    if (!overlay) return;
+
+    overlay.dataset.theme = currentTheme;
+
+    const toggleButton = overlay.querySelector(".unclutter-ai-theme-toggle");
+    if (toggleButton) {
+      toggleButton.innerHTML = currentTheme === "light" ? MOON_ICON : SUN_ICON;
+      toggleButton.setAttribute(
+        "aria-label",
+        currentTheme === "light" ? "Switch to dark theme" : "Switch to light theme",
+      );
+    }
+  }
+
+  function toggleTheme() {
+    const nextTheme = currentTheme === "light" ? "dark" : "light";
+    applyTheme(nextTheme);
+    // Persist under the same key popup.js reads, so the toolbar popup's
+    // toggle stays in sync with whatever was picked from the overlay.
+    chrome.storage.local.set({ [THEME_KEY]: nextTheme });
+  }
+
   function closeOverlay() {
     document.getElementById(OVERLAY_ID)?.remove();
     stopReader({ clearResult: true });
@@ -220,6 +250,7 @@
     overlay.id = OVERLAY_ID;
     overlay.innerHTML = `
       <div class="unclutter-ai-panel">
+        <button class="unclutter-ai-theme-toggle" type="button" aria-label="Switch to light theme">${SUN_ICON}</button>
         <button class="unclutter-ai-close" aria-label="Close reader mode">
           &times;
         </button>
@@ -234,7 +265,14 @@
       .querySelector(".unclutter-ai-close")
       .addEventListener("click", closeOverlay);
 
+    overlay
+      .querySelector(".unclutter-ai-theme-toggle")
+      .addEventListener("click", toggleTheme);
+
     document.body.appendChild(overlay);
+    chrome.storage.local.get(THEME_KEY, (stored) =>
+      applyTheme(stored[THEME_KEY]),
+    );
     return overlay;
   }
 
@@ -329,6 +367,12 @@
       .querySelector("#unclutter-close-error")
       .addEventListener("click", closeOverlay);
   }
+
+  chrome.storage.onChanged.addListener((changes, areaName) => {
+    if (areaName === "local" && changes[THEME_KEY]) {
+      applyTheme(changes[THEME_KEY].newValue);
+    }
+  });
 
   chrome.runtime.onMessage.addListener((message) => {
     if (message.type === "RESET") {
