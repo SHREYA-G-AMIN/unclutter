@@ -317,7 +317,8 @@
   }
 
   function createOverlay() {
-    closeOverlay();
+    document.getElementById(OVERLAY_ID)?.remove();
+    stopReader({ clearResult: true });
 
     const overlay = document.createElement("div");
     overlay.id = OVERLAY_ID;
