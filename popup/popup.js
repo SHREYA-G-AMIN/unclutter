@@ -1,5 +1,4 @@
 const statusEl = document.getElementById("status");
-
 const readerPlayPause = document.getElementById("readerPlayPause");
 const readerStop = document.getElementById("readerStop");
 const readerSpeed = document.getElementById("readerSpeed");
