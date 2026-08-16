@@ -1,0 +1,21 @@
+{
+  "name": "unclutter",
+  "version": "0.1.0",
+  "description": "AI-powered browser extension that transforms overwhelming webpages into calm, focused, and accessible experiences.",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SHREYA-G-AMIN/unclutter.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/SHREYA-G-AMIN/unclutter/issues"
+  },
+  "homepage": "https://github.com/SHREYA-G-AMIN/unclutter#readme",
+  "private": true
+}

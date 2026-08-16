@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Unclutter — Calm Mode",
+  "name": "Unclutter - Calm Mode",
   "version": "0.1.0",
   "description": "Transforms any webpage based on your current cognitive state.",
   "permissions": ["activeTab", "scripting", "storage", "tts"],
@@ -19,8 +19,8 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content/content.js"],
-      "css": ["content/content.css"],
+      "js": ["content/content.js", "content/ai.js"],
+      "css": ["content/content.css", "content/ai.css"],
       "run_at": "document_idle"
     }
   ],
