@@ -100,7 +100,10 @@ function applyCantFocus() {
     el.classList.add("unclutter-dim");
   });
 
-  document.documentElement.classList.add("unclutter-no-animation");
+  document.documentElement.classList.add(
+    "unclutter-no-animation",
+    "unclutter-calm-bg",
+  );
   const next = findNextStep(main);
   if (next) next.classList.add("unclutter-highlight-next");
 }
