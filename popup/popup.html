@@ -39,7 +39,7 @@
     </div>
 
     <div class="section">
-      <h2 class="section-label">Always On</h2>
+      <h2 class="section-label">Accessibility</h2>
       <div class="option-card">
         <label class="toggle-row">
           <span class="option-text">Dyslexia-friendly font</span>
@@ -48,14 +48,27 @@
             <span class="switch-track"><span class="switch-thumb"></span></span>
           </span>
         </label>
-        <div class="divider"></div>
-        <label class="toggle-row">
-          <span class="option-text">Read aloud</span>
-          <span class="switch">
-            <input type="checkbox" id="readAloud" checked />
-            <span class="switch-track"><span class="switch-thumb"></span></span>
-          </span>
-        </label>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2 class="section-label">Read Aloud</h2>
+      <div class="reader-card">
+        <div class="reader-buttons">
+          <button id="readerPlayPause" class="reader-btn" disabled>Play</button>
+          <button id="readerStop" class="reader-btn reader-btn-secondary" disabled>Stop</button>
+          <label class="speed-control">
+            <span>Speed</span>
+            <select id="readerSpeed" disabled>
+              <option value="0.75">0.75×</option>
+              <option value="1" selected>1×</option>
+              <option value="1.25">1.25×</option>
+            </select>
+          </label>
+        </div>
+        <p id="readerStatus" class="reader-status" aria-live="polite">
+          Simplify a page to enable controls.
+        </p>
       </div>
     </div>
 
