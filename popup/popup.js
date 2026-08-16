@@ -1,10 +1,10 @@
 const statusEl = document.getElementById("status");
-const themeToggleBtn = document.getElementById("themeToggle");
-const themeIconEl = document.getElementById("themeIcon");
 const readerPlayPause = document.getElementById("readerPlayPause");
 const readerStop = document.getElementById("readerStop");
 const readerSpeed = document.getElementById("readerSpeed");
 const readerStatus = document.getElementById("readerStatus");
+const themeToggleBtn = document.getElementById("themeToggle");
+const themeIconEl = document.getElementById("themeIcon");
 
 async function getActiveTab() {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -130,11 +130,12 @@ async function logOverloadEvent(state) {
     overloadLog: overloadLog.slice(-500),
   });
 }
+loadReaderState();
 
 function applyTheme(theme) {
   const isLight = theme === "light";
+
   document.body.classList.toggle("light-theme", isLight);
-  // Icon shows the mode you'd switch TO, matching the "sun = go light" convention
   themeIconEl.textContent = isLight ? "dark_mode" : "light_mode";
 }
 
@@ -144,12 +145,11 @@ async function initTheme() {
 }
 
 themeToggleBtn.addEventListener("click", async () => {
-  const nextTheme = document.body.classList.contains("light-theme") ? "dark" : "light";
+  const isLight = document.body.classList.contains("light-theme");
+  const nextTheme = isLight ? "dark" : "light";
+
   applyTheme(nextTheme);
   await chrome.storage.local.set({ theme: nextTheme });
 });
 
 initTheme();
-
-loadReaderState();
-

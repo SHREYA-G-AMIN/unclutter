@@ -9,6 +9,10 @@
   let currentTheme = "dark";
   let currentResult = null;
   let currentUtterance = null;
+  let readerSegments = [];
+  let currentSegmentIndex = 0;
+  let simplificationInProgress = false;
+  let activeRequestId = 0;
   let readerState = {
     available: false,
     status: "idle",
@@ -49,19 +53,43 @@
           "textarea",
           "select",
           "button",
+          "table",
           "[hidden]",
           "[aria-hidden='true']",
+          "[role='navigation']",
+          "[aria-label*='language']",
+          "[class*='language']",
           "[class*='advert']",
           "[class*='popup']",
           "[class*='cookie']",
           "[class*='newsletter']",
+          ".vector-header",
+          ".vector-column-start",
+          ".vector-column-end",
+          ".mw-portlet",
+          ".mw-editsection",
+          ".navbox",
+          ".sidebar",
+          ".infobox",
+          ".hatnote",
+          ".metadata",
+          "sup.reference",
         ].join(","),
       )
       .forEach((element) => element.remove());
 
-    const text = (clone.innerText || clone.textContent || "")
+    const blocks = Array.from(clone.querySelectorAll("h1, h2, h3, p, li"))
+      .map((element) =>
+        (element.textContent || "").replace(/\s+/g, " ").trim(),
+      )
+      .filter((block) => block.length >= 40 && block.length <= 800)
+      .filter((block, index, items) => items.indexOf(block) === index);
+
+    const fallbackText = (clone.textContent || "")
       .replace(/\s+/g, " ")
-      .trim()
+      .trim();
+
+    const text = (blocks.length ? blocks.join("\n") : fallbackText)
       .slice(0, 12000);
 
     return {
@@ -80,18 +108,82 @@
       .replaceAll("'", "&#039;");
   }
 
-  function getSpeechText() {
-    if (!currentResult) return "";
-
-    return [
-      currentResult.title,
-      currentResult.summary,
-      ...currentResult.keyPoints,
-      currentResult.nextStep,
-      currentResult.calmingNote,
+  function prepareReaderSegments(result) {
+    readerSegments = [
+      result.title,
+      result.summary,
+      ...result.keyPoints,
+      result.nextStep,
+      result.calmingNote,
     ]
       .filter(Boolean)
-      .join(". ");
+      .map((text, index) => ({ index, text: String(text) }));
+
+    currentSegmentIndex = 0;
+  }
+
+  function readerText(text, index) {
+    return `<span class="unclutter-reader-segment" data-reader-index="${index}">${escapeHtml(text)}</span>`;
+  }
+
+  function clearReaderHighlight() {
+    document
+      .querySelectorAll(".unclutter-reader-segment-active")
+      .forEach((element) =>
+        element.classList.remove("unclutter-reader-segment-active"),
+      );
+  }
+
+  function highlightReaderSegment(index) {
+    clearReaderHighlight();
+
+    const element = document.querySelector(
+      `[data-reader-index="${index}"]`,
+    );
+
+    if (!element) return;
+
+    element.classList.add("unclutter-reader-segment-active");
+    element.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+      inline: "nearest",
+    });
+  }
+
+  function speakCurrentSegment(rate = readerState.rate) {
+    if (currentSegmentIndex >= readerSegments.length) {
+      currentUtterance = null;
+      currentSegmentIndex = 0;
+      clearReaderHighlight();
+      setReaderState({ status: "idle" });
+      return;
+    }
+
+    const segment = readerSegments[currentSegmentIndex];
+    const utterance = new SpeechSynthesisUtterance(segment.text);
+    utterance.rate = rate;
+    currentUtterance = utterance;
+
+    highlightReaderSegment(segment.index);
+
+    utterance.onend = () => {
+      if (currentUtterance !== utterance) return;
+
+      currentUtterance = null;
+      currentSegmentIndex += 1;
+      speakCurrentSegment(rate);
+    };
+
+    utterance.onerror = (event) => {
+      if (currentUtterance !== utterance || event.error === "canceled") return;
+
+      currentUtterance = null;
+      clearReaderHighlight();
+      setReaderState({ status: "idle" });
+    };
+
+    window.speechSynthesis.speak(utterance);
   }
 
   function publishReaderState() {
@@ -139,9 +231,12 @@
   function stopReader({ clearResult = false } = {}) {
     currentUtterance = null;
     window.speechSynthesis.cancel();
+    currentSegmentIndex = 0;
+    clearReaderHighlight();
 
     if (clearResult) {
       currentResult = null;
+      readerSegments = [];
     }
 
     setReaderState({
@@ -151,7 +246,7 @@
   }
 
   function toggleReader(rate = readerState.rate) {
-    if (!currentResult) return;
+    if (!currentResult || !readerSegments.length) return;
 
     const nextRate = Number(rate) || 1;
 
@@ -173,23 +268,11 @@
     currentUtterance = null;
     window.speechSynthesis.cancel();
 
-    const utterance = new SpeechSynthesisUtterance(getSpeechText());
-    utterance.rate = nextRate;
-    currentUtterance = utterance;
+    if (currentSegmentIndex >= readerSegments.length) {
+      currentSegmentIndex = 0;
+    }
 
-    utterance.onend = () => {
-      if (currentUtterance !== utterance) return;
-      currentUtterance = null;
-      setReaderState({ status: "idle" });
-    };
-
-    utterance.onerror = () => {
-      if (currentUtterance !== utterance) return;
-      currentUtterance = null;
-      setReaderState({ status: "idle" });
-    };
-
-    window.speechSynthesis.speak(utterance);
+    speakCurrentSegment(nextRate);
     setReaderState({
       available: true,
       status: "speaking",
@@ -225,7 +308,9 @@
       toggleButton.innerHTML = currentTheme === "light" ? MOON_ICON : SUN_ICON;
       toggleButton.setAttribute(
         "aria-label",
-        currentTheme === "light" ? "Switch to dark theme" : "Switch to light theme",
+        currentTheme === "light"
+          ? "Switch to dark theme"
+          : "Switch to light theme",
       );
     }
   }
@@ -233,18 +318,37 @@
   function toggleTheme() {
     const nextTheme = currentTheme === "light" ? "dark" : "light";
     applyTheme(nextTheme);
-    // Persist under the same key popup.js reads, so the toolbar popup's
-    // toggle stays in sync with whatever was picked from the overlay.
     chrome.storage.local.set({ [THEME_KEY]: nextTheme });
+  }
+
+  function restoreOriginalPageStyles() {
+    document
+      .querySelectorAll(
+        ".unclutter-hidden, .unclutter-dim, .unclutter-highlight-next",
+      )
+      .forEach((element) => {
+        element.classList.remove(
+          "unclutter-hidden",
+          "unclutter-dim",
+          "unclutter-highlight-next",
+        );
+      });
+
+    document.documentElement.classList.remove(
+      "unclutter-no-animation",
+      "unclutter-calm-bg",
+    );
   }
 
   function closeOverlay() {
     document.getElementById(OVERLAY_ID)?.remove();
     stopReader({ clearResult: true });
+    restoreOriginalPageStyles();
   }
 
   function createOverlay() {
-    closeOverlay();
+    document.getElementById(OVERLAY_ID)?.remove();
+    stopReader({ clearResult: true });
 
     const overlay = document.createElement("div");
     overlay.id = OVERLAY_ID;
@@ -281,6 +385,7 @@
       document.getElementById(OVERLAY_ID) || createOverlay();
 
     currentResult = result;
+    prepareReaderSegments(result);
     readerState = {
       available: true,
       status: "idle",
@@ -288,15 +393,15 @@
     };
 
     const keyPoints = result.keyPoints
-      .map((point) => `<li>${escapeHtml(point)}</li>`)
+      .map((point, index) => `<li>${readerText(point, index + 2)}</li>`)
       .join("");
 
     const content = overlay.querySelector(".unclutter-ai-content");
 
     content.innerHTML = `
       <span class="unclutter-ai-label">Calm reading mode</span>
-      <h1>${escapeHtml(result.title)}</h1>
-      <p class="unclutter-ai-summary">${escapeHtml(result.summary)}</p>
+      <h1>${readerText(result.title, 0)}</h1>
+      <p class="unclutter-ai-summary">${readerText(result.summary, 1)}</p>
 
       <section>
         <h2>What matters</h2>
@@ -305,10 +410,13 @@
 
       <section class="unclutter-ai-next">
         <h2>Your next step</h2>
-        <p>${escapeHtml(result.nextStep)}</p>
+        <p>${readerText(result.nextStep, result.keyPoints.length + 2)}</p>
       </section>
 
-      <p class="unclutter-ai-note">${escapeHtml(result.calmingNote)}</p>
+      <p class="unclutter-ai-note">${readerText(
+        result.calmingNote,
+        result.keyPoints.length + 3,
+      )}</p>
 
       <div class="unclutter-ai-reader" aria-label="Read aloud controls">
         <button id="unclutter-reader-play">Play</button>
@@ -350,6 +458,31 @@
     publishReaderState();
   }
 
+  function buildFallbackResult(page) {
+    const blocks = page.text
+      .split(/\n+/)
+      .map((block) => block.trim())
+      .filter((block) => block.length >= 40);
+
+    const summary = (blocks[0] || page.text).slice(0, 400);
+    const keyPoints = blocks.slice(1, 6).map((block) => block.slice(0, 240));
+
+    if (!keyPoints.length) {
+      keyPoints.push(page.text.slice(0, 240));
+    }
+
+    return {
+      title:
+        page.title.replace(/\s*[-–—]\s*Wikipedia.*$/i, "").trim() ||
+        "Calm reading mode",
+      summary,
+      keyPoints,
+      nextStep: "Start with the first key point and continue when you feel ready.",
+      calmingNote:
+        "AI is temporarily busy, so Unclutter is showing a calm local version.",
+    };
+  }
+
   function showError(message) {
     const overlay =
       document.getElementById(OVERLAY_ID) || createOverlay();
@@ -376,6 +509,8 @@
 
   chrome.runtime.onMessage.addListener((message) => {
     if (message.type === "RESET") {
+      activeRequestId += 1;
+      simplificationInProgress = false;
       closeOverlay();
       return false;
     }
@@ -399,12 +534,19 @@
       return false;
     }
 
+    if (simplificationInProgress) {
+      return false;
+    }
+
     const mode = message.mode || message.state;
     const page = extractPageContent();
+    const requestId = ++activeRequestId;
 
+    simplificationInProgress = true;
     createOverlay();
 
     if (!page.text) {
+      simplificationInProgress = false;
       showError("No readable page content was found.");
       return false;
     }
@@ -418,16 +560,14 @@
         },
       },
       (response) => {
-        if (chrome.runtime.lastError) {
-          showError("The AI service could not be reached.");
+        if (requestId !== activeRequestId) {
           return;
         }
 
-        if (!response?.ok) {
-          showError(
-            response?.error ||
-              "AI simplification is temporarily unavailable.",
-          );
+        simplificationInProgress = false;
+
+        if (chrome.runtime.lastError || !response?.ok) {
+          showResult(buildFallbackResult(page));
           return;
         }
 

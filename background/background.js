@@ -39,6 +39,13 @@ async function simplifyContent(payload) {
     throw new Error("Missing webpage content or wellness mode.");
   }
 
+  const cacheKey = `simplification:${payload.mode}:${payload.url}`;
+  const cached = await chrome.storage.local.get(cacheKey);
+
+  if (cached[cacheKey]) {
+    return cached[cacheKey];
+  }
+
   const response = await fetch(`${API_BASE_URL}/api/simplify`, {
     method: "POST",
     headers: {
@@ -53,6 +60,10 @@ async function simplifyContent(payload) {
   if (!response.ok || !result.ok) {
     throw new Error(result.error || "Simplification request failed.");
   }
+
+  await chrome.storage.local.set({
+    [cacheKey]: result.data,
+  });
 
   return result.data;
 }

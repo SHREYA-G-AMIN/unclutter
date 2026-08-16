@@ -275,3 +275,24 @@
     justify-content: space-between !important;
   }
 }
+
+.unclutter-reader-segment {
+  border-radius: 5px;
+  transition:
+    background-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.unclutter-reader-segment-active {
+  background: #ffe995;
+  box-shadow: 0 0 0 4px rgba(255, 213, 79, 0.3);
+  color: #1f2d27;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .unclutter-reader-segment {
+    transition: none;
+  }
+}
