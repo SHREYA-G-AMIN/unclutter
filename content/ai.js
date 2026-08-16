@@ -291,9 +291,29 @@
     }
   }
 
+  function restoreOriginalPageStyles() {
+    document
+      .querySelectorAll(
+        ".unclutter-hidden, .unclutter-dim, .unclutter-highlight-next",
+      )
+      .forEach((element) => {
+        element.classList.remove(
+          "unclutter-hidden",
+          "unclutter-dim",
+          "unclutter-highlight-next",
+        );
+      });
+
+    document.documentElement.classList.remove(
+      "unclutter-no-animation",
+      "unclutter-calm-bg",
+    );
+  }
+
   function closeOverlay() {
     document.getElementById(OVERLAY_ID)?.remove();
     stopReader({ clearResult: true });
+    restoreOriginalPageStyles();
   }
 
   function createOverlay() {
