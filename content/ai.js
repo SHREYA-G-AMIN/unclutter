@@ -419,7 +419,7 @@
     overlay.removeAttribute("aria-busy");
 
     content.innerHTML = `
-      <span class="unclutter-ai-label">Calm reading mode</span>
+      <span class="unclutter-ai-label">${result.isFallback ? "Basic calm mode" : "Calm reading mode"}</span>
       <h1>${readerText(result.title, 0)}</h1>
       <p class="unclutter-ai-summary">${readerText(result.summary, 1)}</p>
 
@@ -497,9 +497,10 @@
         "Calm reading mode",
       summary,
       keyPoints,
-      nextStep: "Start with the first key point and continue when you feel ready.",
+      nextStep: "Read one key point at a time and pause whenever you need to.",
       calmingNote:
-        "AI is temporarily busy, so Unclutter is showing a calm local version.",
+        "A simple local version is shown so you can continue reading.",
+      isFallback: true,
     };
   }
 
