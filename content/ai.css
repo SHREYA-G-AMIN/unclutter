@@ -5,7 +5,7 @@
   --sage-bright: #bfe6c8;
   --label-bright: #ffffff;
 
-  --ai-backdrop: rgba(8, 10, 9, 0.93);
+  --ai-backdrop: rgba(8, 12, 10, 0.68);
   --ai-panel-bg: #1e201e;
   --ai-text: #e2e3df;
   --ai-heading: #f4f5f2;
@@ -28,7 +28,8 @@
   overflow-y: auto !important;
   padding: 48px 20px !important;
   background: var(--ai-backdrop) !important;
-  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(0.78) !important;
+  backdrop-filter: blur(24px) saturate(0.78) !important;
   color: var(--ai-text) !important;
   font-family: Inter, system-ui, sans-serif !important;
   isolation: isolate !important;
@@ -41,7 +42,7 @@
   --sage-bright: #40564b;
   --label-bright: #26352e;
 
-  --ai-backdrop: rgba(235, 240, 236, 0.94);
+  --ai-backdrop: rgba(230, 238, 233, 0.58);
   --ai-panel-bg: #f7f4ed;
   --ai-text: #27312d;
   --ai-heading: #26352e;
