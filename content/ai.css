@@ -5,7 +5,7 @@
   --sage-bright: #bfe6c8;
   --label-bright: #ffffff;
 
-  --ai-backdrop: rgba(8, 9, 8, 0.78);
+  --ai-backdrop: rgba(8, 12, 10, 0.68);
   --ai-panel-bg: #1e201e;
   --ai-text: #e2e3df;
   --ai-heading: #f4f5f2;
@@ -28,16 +28,21 @@
   overflow-y: auto !important;
   padding: 48px 20px !important;
   background: var(--ai-backdrop) !important;
-  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(0.78) !important;
+  backdrop-filter: blur(24px) saturate(0.78) !important;
   color: var(--ai-text) !important;
   font-family: Inter, system-ui, sans-serif !important;
+  isolation: isolate !important;
+  transition:
+    background-color 220ms ease,
+    color 220ms ease !important;
 }
 
 #unclutter-ai-overlay[data-theme="light"] {
   --sage-bright: #40564b;
   --label-bright: #26352e;
 
-  --ai-backdrop: rgba(20, 25, 31, 0.72);
+  --ai-backdrop: rgba(230, 238, 233, 0.58);
   --ai-panel-bg: #f7f4ed;
   --ai-text: #27312d;
   --ai-heading: #26352e;
@@ -58,6 +63,23 @@
   border-radius: 24px !important;
   background: var(--ai-panel-bg) !important;
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28) !important;
+  transition:
+    background-color 220ms ease,
+    box-shadow 220ms ease,
+    transform 180ms ease !important;
+}
+
+.unclutter-ai-content {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
+}
+
+#unclutter-ai-overlay[aria-busy="true"] .unclutter-ai-content {
+  opacity: 0.9;
+  transform: translateY(2px);
 }
 
 .unclutter-ai-close {
@@ -284,9 +306,11 @@
 }
 
 .unclutter-reader-segment-active {
-  background: #ffe995;
-  box-shadow: 0 0 0 4px rgba(255, 213, 79, 0.3);
-  color: #1f2d27;
+  background: #ffe995 !important;
+  box-shadow: 0 0 0 4px rgba(255, 213, 79, 0.3) !important;
+  color: #1f2d27 !important;
+  -webkit-text-fill-color: #1f2d27 !important;
+  text-shadow: none !important;
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
 }
@@ -294,5 +318,13 @@
 @media (prefers-reduced-motion: reduce) {
   .unclutter-reader-segment {
     transition: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #unclutter-ai-overlay,
+  .unclutter-ai-panel,
+  .unclutter-ai-content {
+    transition: none !important;
   }
 }
