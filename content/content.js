@@ -96,7 +96,15 @@ function applyCantFocus() {
   const main = findMainContent();
 
   qsa("body > *").forEach((el) => {
-    if (el === main || el.contains(main) || main.contains(el)) return;
+    if (
+      el.id === "unclutter-ai-overlay" ||
+      el === main ||
+      el.contains(main) ||
+      main.contains(el)
+    ) {
+      return;
+    }
+
     el.classList.add("unclutter-dim");
   });
 
