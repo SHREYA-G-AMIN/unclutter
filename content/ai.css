@@ -1,111 +1,194 @@
 #unclutter-ai-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 2147483647;
-  overflow-y: auto;
-  padding: 48px 20px;
-  background: rgba(20, 25, 31, 0.72);
-  backdrop-filter: blur(10px);
-  color: #27312d;
-  font-family: Inter, system-ui, sans-serif;
+  /* Dark is the default theme. ai.js sets data-theme="light"/"dark" on
+     this element — from the in-panel toggle button, and it also writes
+     to chrome.storage.local so the popup's toggle stays in sync. */
+  --sage-bright: #bfe6c8;
+  --label-bright: #ffffff;
+
+  --ai-backdrop: rgba(8, 9, 8, 0.78);
+  --ai-panel-bg: #1e201e;
+  --ai-text: #e2e3df;
+  --ai-heading: #f4f5f2;
+  --ai-subheading: var(--sage-bright);
+  --ai-next-bg: #292a28;
+  --ai-reader-bg: #232523;
+  --ai-border: #333533;
+  --ai-close: #9aa39c;
+  --ai-loader-track: #333533;
+  --ai-toggle-bg: #292a28;
+
+  /* Bold w3schools-style green button, same in both themes */
+  --btn-bg: #04aa6d;
+  --btn-bg-hover: #059862;
+  --btn-text: #ffffff;
+
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 2147483647 !important;
+  overflow-y: auto !important;
+  padding: 48px 20px !important;
+  background: var(--ai-backdrop) !important;
+  backdrop-filter: blur(10px) !important;
+  color: var(--ai-text) !important;
+  font-family: Inter, system-ui, sans-serif !important;
+}
+
+#unclutter-ai-overlay[data-theme="light"] {
+  --sage-bright: #40564b;
+  --label-bright: #26352e;
+
+  --ai-backdrop: rgba(20, 25, 31, 0.72);
+  --ai-panel-bg: #f7f4ed;
+  --ai-text: #27312d;
+  --ai-heading: #26352e;
+  --ai-next-bg: #e9eee9;
+  --ai-reader-bg: #edf2ee;
+  --ai-border: #cdd9d1;
+  --ai-close: #59645f;
+  --ai-loader-track: #dce5df;
+  --ai-toggle-bg: #e9eee9;
 }
 
 .unclutter-ai-panel {
-  position: relative;
-  width: min(760px, 100%);
-  min-height: 300px;
-  margin: 0 auto;
-  padding: 48px;
-  border-radius: 24px;
-  background: #f7f4ed;
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
+  position: relative !important;
+  width: min(760px, 100%) !important;
+  min-height: 300px !important;
+  margin: 0 auto !important;
+  padding: 48px !important;
+  border-radius: 24px !important;
+  background: var(--ai-panel-bg) !important;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28) !important;
 }
 
 .unclutter-ai-close {
-  position: absolute;
-  top: 18px;
-  right: 22px;
-  border: 0;
-  background: transparent;
-  color: #59645f;
-  font-size: 32px;
-  cursor: pointer;
+  position: absolute !important;
+  top: 18px !important;
+  right: 22px !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: var(--ai-close) !important;
+  font-size: 32px !important;
+  cursor: pointer !important;
+}
+
+.unclutter-ai-theme-toggle {
+  position: absolute !important;
+  top: 18px !important;
+  left: 22px !important;
+  width: 34px !important;
+  height: 34px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: var(--ai-toggle-bg) !important;
+  color: var(--ai-heading) !important;
+  font-size: 16px !important;
+  line-height: 1 !important;
+  cursor: pointer !important;
+}
+
+.unclutter-ai-theme-toggle:hover {
+  filter: brightness(1.1) !important;
+}
+
+.unclutter-ai-theme-toggle svg {
+  width: 16px !important;
+  height: 16px !important;
 }
 
 .unclutter-ai-content h1 {
-  margin: 12px 0 18px;
-  color: #26352e;
-  font-size: clamp(28px, 5vw, 44px);
-  line-height: 1.1;
+  margin: 12px 0 18px !important;
+  color: var(--ai-heading) !important;
+  font-size: clamp(28px, 5vw, 44px) !important;
+  line-height: 1.1 !important;
 }
 
 .unclutter-ai-content h2 {
-  margin: 28px 0 10px;
-  color: #40564b;
-  font-size: 18px;
+  margin: 28px 0 10px !important;
+  color: var(--ai-subheading) !important;
+  font-size: 18px !important;
 }
 
 .unclutter-ai-content p,
 .unclutter-ai-content li {
-  font-size: 17px;
-  line-height: 1.7;
+  color: var(--ai-text) !important;
+  font-size: 17px !important;
+  line-height: 1.7 !important;
 }
 
 .unclutter-ai-label {
-  color: #557565;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  color: var(--sage-bright) !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
 }
 
 .unclutter-ai-summary {
-  color: #4c5953;
+  color: var(--ai-text) !important;
   font-size: 19px !important;
 }
 
 .unclutter-ai-next {
-  padding: 2px 20px 18px;
-  border-left: 4px solid #769b88;
-  border-radius: 8px;
-  background: #e9eee9;
+  padding: 2px 20px 18px !important;
+  border-left: 4px solid var(--btn-bg) !important;
+  border-radius: 8px !important;
+  background: var(--ai-next-bg) !important;
+}
+
+.unclutter-ai-next h2,
+.unclutter-ai-next p {
+  color: var(--ai-heading) !important;
 }
 
 .unclutter-ai-note {
-  color: #557565;
-  font-style: italic;
+  color: var(--sage-bright) !important;
+  font-style: italic !important;
 }
 
 .unclutter-ai-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 28px;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 12px !important;
+  margin-top: 28px !important;
 }
 
 .unclutter-ai-actions button,
 #unclutter-close-error {
-  padding: 11px 18px;
-  border: 1px solid #769b88;
-  border-radius: 10px;
-  background: #557565;
-  color: white;
-  font: inherit;
-  cursor: pointer;
+  padding: 11px 18px !important;
+  border: 0 !important;
+  border-radius: 10px !important;
+  background: var(--btn-bg) !important;
+  color: var(--btn-text) !important;
+  font: 700 15px inherit !important;
+  cursor: pointer !important;
+  transition: background 0.15s ease !important;
+}
+
+.unclutter-ai-actions button:hover,
+#unclutter-close-error:hover {
+  background: var(--btn-bg-hover) !important;
 }
 
 #unclutter-restore-page {
-  background: transparent;
-  color: #40564b;
+  background: transparent !important;
+  color: var(--ai-heading) !important;
+  border: 1px solid var(--ai-border) !important;
+}
+
+#unclutter-restore-page:hover {
+  background: var(--ai-next-bg) !important;
 }
 
 .unclutter-ai-loader {
-  width: 38px;
-  height: 38px;
-  margin: 70px auto 20px;
-  border: 4px solid #dce5df;
-  border-top-color: #557565;
-  border-radius: 50%;
+  width: 38px !important;
+  height: 38px !important;
+  margin: 70px auto 20px !important;
+  border: 4px solid var(--ai-loader-track) !important;
+  border-top-color: var(--btn-bg) !important;
+  border-radius: 50% !important;
   animation: unclutter-spin 0.8s linear infinite;
 }
 
@@ -117,73 +200,79 @@
 
 @media (max-width: 600px) {
   #unclutter-ai-overlay {
-    padding: 16px;
+    padding: 16px !important;
   }
 
   .unclutter-ai-panel {
-    padding: 38px 24px 28px;
-    border-radius: 18px;
+    padding: 38px 24px 28px !important;
+    border-radius: 18px !important;
   }
 }
 
 .unclutter-ai-reader {
-  display: grid;
-  grid-template-columns: auto auto minmax(150px, 1fr);
-  gap: 10px;
-  align-items: center;
-  margin-top: 26px;
-  padding: 14px;
-  border: 1px solid #cdd9d1;
-  border-radius: 12px;
-  background: #edf2ee;
+  display: grid !important;
+  grid-template-columns: auto auto minmax(150px, 1fr) !important;
+  gap: 10px !important;
+  align-items: center !important;
+  margin-top: 26px !important;
+  padding: 14px !important;
+  border: 1px solid var(--ai-border) !important;
+  border-radius: 12px !important;
+  background: var(--ai-reader-bg) !important;
 }
 
 .unclutter-ai-reader button,
 .unclutter-ai-reader select {
-  min-height: 40px;
-  padding: 8px 14px;
-  border: 1px solid #769b88;
-  border-radius: 9px;
-  background: #557565;
-  color: white;
-  font: inherit;
-  cursor: pointer;
+  min-height: 40px !important;
+  padding: 8px 14px !important;
+  border: 0 !important;
+  border-radius: 9px !important;
+  background: var(--btn-bg) !important;
+  color: var(--btn-text) !important;
+  font: 700 14px inherit !important;
+  cursor: pointer !important;
+  transition: background 0.15s ease !important;
+}
+
+.unclutter-ai-reader button:not(:disabled):hover,
+.unclutter-ai-reader select:not(:disabled):hover {
+  background: var(--btn-bg-hover) !important;
 }
 
 .unclutter-ai-reader button:disabled,
 .unclutter-ai-reader select:disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
+  cursor: not-allowed !important;
+  opacity: 0.5 !important;
 }
 
 .unclutter-ai-reader label {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 8px;
-  color: #40564b;
-  font-size: 14px;
-  font-weight: 600;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 8px !important;
+  color: var(--ai-heading) !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
 }
 
 #unclutter-reader-status {
-  grid-column: 1 / -1;
-  color: #557565;
-  font-size: 13px;
+  grid-column: 1 / -1 !important;
+  color: var(--sage-bright) !important;
+  font-size: 13px !important;
 }
 
 @media (max-width: 600px) {
   .unclutter-ai-reader {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr !important;
   }
 
   .unclutter-ai-reader label,
   #unclutter-reader-status {
-    grid-column: 1 / -1;
+    grid-column: 1 / -1 !important;
   }
 
   .unclutter-ai-reader label {
-    justify-content: space-between;
+    justify-content: space-between !important;
   }
 }
 
