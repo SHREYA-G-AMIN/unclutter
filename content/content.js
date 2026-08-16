@@ -135,16 +135,6 @@ function setDyslexiaFont(enabled) {
 function showEyeComfortPanel() {
   removeEyeComfortPanel(); // avoid duplicates
 
-  const dimOverlay = document.createElement("div");
-  dimOverlay.id = "unclutter-dim-overlay";
-  dimOverlay.className = "unclutter-dim-overlay";
-  document.body.appendChild(dimOverlay);
-
-  const warmthOverlay = document.createElement("div");
-  warmthOverlay.id = "unclutter-warmth-overlay";
-  warmthOverlay.className = "unclutter-warmth-overlay";
-  document.body.appendChild(warmthOverlay);
-
   const panel = document.createElement("div");
   panel.id = "unclutter-eye-panel";
   panel.className = "unclutter-eye-panel";
@@ -160,25 +150,42 @@ function showEyeComfortPanel() {
       <input type="range" id="unclutter-warmth-slider" min="0" max="60" value="0" />
     </div>
   `;
-  document.body.appendChild(panel);
+  // Appended to <html> itself, NOT <body> — so it sits outside the
+  // filtered subtree below and stays crisp even at high dim/warmth levels.
+  document.documentElement.appendChild(panel);
 
   document.getElementById("unclutter-dim-slider").addEventListener("input", (e) => {
     document.getElementById("unclutter-dim-value").textContent = e.target.value + "%";
-    dimOverlay.style.opacity = e.target.value / 100;
+    applyEyeFilter();
   });
 
   document.getElementById("unclutter-warmth-slider").addEventListener("input", (e) => {
     document.getElementById("unclutter-warmth-value").textContent = e.target.value + "%";
-    warmthOverlay.style.opacity = e.target.value / 100;
+    applyEyeFilter();
   });
 
   document.getElementById("unclutter-eye-close").addEventListener("click", removeEyeComfortPanel);
 }
 
+function applyEyeFilter() {
+  const dimSlider = document.getElementById("unclutter-dim-slider");
+  const warmthSlider = document.getElementById("unclutter-warmth-slider");
+  const dim = dimSlider ? Number(dimSlider.value) : 0;
+  const warmth = warmthSlider ? Number(warmthSlider.value) : 0;
+
+  const brightness = 1 - (dim / 100) * 0.6; // capped so the page never goes fully black
+  const sepia = (warmth / 100) * 0.5;
+
+  document.body.style.setProperty(
+    "filter",
+    `brightness(${brightness}) sepia(${sepia})`,
+    "important"
+  );
+}
+
 function removeEyeComfortPanel() {
   document.getElementById("unclutter-eye-panel")?.remove();
-  document.getElementById("unclutter-dim-overlay")?.remove();
-  document.getElementById("unclutter-warmth-overlay")?.remove();
+  document.body.style.removeProperty("filter");
 }
 
 function startReadAloud() {

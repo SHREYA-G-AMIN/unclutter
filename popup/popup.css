@@ -13,8 +13,11 @@
   --slate-muted: #5e6c75;
   --sage-bright: #bfe6c8;
   --slate-bright: #a9d3e0;
+  --accent-warm: #e0a97a;
   --on-primary: #121412;
   --label-bright: #ffffff;
+  --brand-glow: 0 0 12px rgba(191, 230, 200, 0.35);
+  --dot-glow: 0 0 6px 1px rgba(191, 230, 200, 0.55);
 }
 
 html {
@@ -38,83 +41,124 @@ body {
   transition: background 0.25s ease, color 0.25s ease;
 }
 
-/* ---- Light theme (toggled via #themeToggle in popup.js) ---- */
 body.light-theme {
-  --background: #f7f7f2;
-  --surface-container-low: #f2f3ed;
-  --surface-container: #fffef9;
-  --surface-container-high: #edf1eb;
-  --surface-container-highest: #d9dfd8;
-  --on-surface: #1d2b24;
-  --on-surface-variant: #56635c;
-  --outline-variant: #cbd4cc;
-  --sage-muted: #5d806c;
-  --slate-muted: #58737a;
-  --sage-bright: #2f684b;
-  --slate-bright: #315f70;
+  --background: #fbf3ee;
+  --surface-container-low: #f7ebe3;
+  --surface-container: #ffffff;
+  --surface-container-high: #f7e9df;
+  --surface-container-highest: #efd9c9;
+  --on-surface: #3c3c3b;
+  --on-surface-variant: #75726d;
+  --outline-variant: #ecdccd;
+  --sage-muted: #93a189;
+  --slate-muted: #d59ca5;
+  --sage-bright: #71806a;
+  --slate-bright: #c4808c;
+  --accent-warm: #e2c284;
   --on-primary: #ffffff;
-  --label-bright: #ffffff;
+  --label-bright: #5e5e5d;
+  --brand-glow: 0 1px 3px rgba(226, 194, 132, 0.4);
+  --dot-glow: 0 0 6px 1px rgba(213, 156, 165, 0.55);
 
   background:
-    radial-gradient(at 0% 0%, rgba(174, 199, 181, 0.26) 0, transparent 44%),
-    radial-gradient(at 100% 0%, rgba(178, 199, 205, 0.2) 0, transparent 42%),
-    linear-gradient(180deg, #fbfcf8 0%, #f4f5ef 100%);
+    radial-gradient(at 0% 0%, rgba(147, 161, 137, 0.16) 0px, transparent 55%),
+    radial-gradient(at 100% 0%, rgba(213, 156, 165, 0.18) 0px, transparent 55%),
+    radial-gradient(at 100% 100%, rgba(226, 194, 132, 0.22) 0px, transparent 55%),
+    radial-gradient(at 0% 100%, rgba(147, 161, 137, 0.12) 0px, transparent 55%),
+    #fbf3ee;
 }
 
 body.light-theme .topbar {
-  background: rgba(255, 254, 249, 0.94);
-  border-bottom: 1px solid rgba(203, 212, 204, 0.75);
-  box-shadow: 0 2px 10px rgba(35, 55, 45, 0.04);
+  background: linear-gradient(120deg, rgba(255, 255, 255, 0.95), rgba(247, 233, 223, 0.9), rgba(255, 248, 236, 0.95));
+  background-size: 200% 200%;
+  animation: unclutterTopbarShift 10s ease-in-out infinite;
+  border-bottom: 1px solid rgba(236, 220, 205, 0.85);
 }
 
-body.light-theme .brand,
-body.light-theme .section-label {
-  color: #29483a;
-  text-shadow: none;
+@keyframes unclutterTopbarShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+body.light-theme .brand::before {
+  animation: unclutterDotPulse 2.6s ease-in-out infinite;
+}
+
+@keyframes unclutterDotPulse {
+  0%, 100% {
+    box-shadow: var(--dot-glow);
+    transform: translateY(-50%) scale(1);
+  }
+  50% {
+    box-shadow: 0 0 10px 2px rgba(226, 194, 132, 0.6);
+    transform: translateY(-50%) scale(1.18);
+  }
+}
+
+/* Living gradient — a slow color drift across active buttons and
+   the active state card, used only in light mode for a bit of life. */
+@keyframes unclutterGradientFlow {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 
 body.light-theme .state-btn,
 body.light-theme .option-card,
 body.light-theme .reader-card,
 body.light-theme .reset-btn {
-  box-shadow: 0 3px 12px rgba(42, 61, 51, 0.07);
+  box-shadow: 0 2px 8px rgba(147, 161, 137, 0.14);
 }
 
 body.light-theme .state-btn:hover {
-  box-shadow: 0 7px 18px rgba(42, 61, 51, 0.11);
+  box-shadow: 0 10px 22px rgba(213, 156, 165, 0.28);
 }
 
 body.light-theme .state-btn.active {
-  border-color: #8fae9c;
-  background: linear-gradient(135deg, #cfe1d5, #c5d9dc);
-  color: #173729;
-  box-shadow: 0 6px 16px rgba(51, 91, 70, 0.14);
+  background: linear-gradient(135deg, var(--sage-muted) 0%, var(--accent-warm) 55%, var(--slate-muted) 100%);
+  background-size: 220% 220%;
+  animation: unclutterGradientFlow 7s ease-in-out infinite;
+  box-shadow: 0 10px 24px rgba(226, 194, 132, 0.32);
 }
 
-body.light-theme .state-btn.active .icon {
-  color: #245640;
+body.light-theme .reader-btn:not(.reader-btn-secondary) {
+  background: linear-gradient(135deg, var(--sage-muted) 0%, var(--accent-warm) 55%, var(--slate-muted) 100%);
+  background-size: 220% 220%;
+  animation: unclutterGradientFlow 7s ease-in-out infinite;
 }
 
-body.light-theme .reader-btn:not(.reader-btn-secondary),
-body.light-theme .speed-control select {
-  border-color: #35664f;
-  background: linear-gradient(135deg, #35664f, #3f6670);
-  color: #ffffff;
+body.light-theme .switch input:checked ~ .switch-track {
+  background: linear-gradient(135deg, var(--sage-muted), var(--accent-warm), var(--slate-muted));
+  background-size: 220% 220%;
+  animation: unclutterGradientFlow 7s ease-in-out infinite;
 }
 
-body.light-theme .reader-btn-secondary {
-  border-color: #d3d9d3;
-  background: #f2f3ef;
-  color: #324039;
+body.light-theme .state-btn:hover .icon {
+  transform: scale(1.12) rotate(-4deg);
 }
 
-body.light-theme .switch-thumb {
-  background: #536159;
+body.light-theme .header-icon:hover {
+  box-shadow: 0 0 0 4px rgba(213, 156, 165, 0.2);
 }
 
-body.light-theme .switch input:checked ~ .switch-track .switch-thumb {
-  background: #ffffff;
+/* Gentle entrance so the popup feels alive when it opens, rather
+   than snapping in — staggered per section, light mode only. */
+@keyframes unclutterFadeInUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
+
+body.light-theme .title-block,
+body.light-theme .state-grid,
+body.light-theme .section,
+body.light-theme .reset-btn {
+  animation: unclutterFadeInUp 0.45s ease-out both;
+}
+
+body.light-theme .title-block { animation-delay: 0s; }
+body.light-theme .state-grid { animation-delay: 0.05s; }
+body.light-theme .section:nth-of-type(1) { animation-delay: 0.1s; }
+body.light-theme .section:nth-of-type(2) { animation-delay: 0.15s; }
+body.light-theme .reset-btn { animation-delay: 0.2s; }
 
 .topbar {
   position: sticky;
@@ -132,12 +176,12 @@ body.light-theme .switch input:checked ~ .switch-track .switch-thumb {
 }
 
 .brand {
-  font-weight: 800;
+  font-weight: 900;
   font-size: 13px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--label-bright);
-  text-shadow: 0 0 12px rgba(191, 230, 200, 0.35);
+  text-shadow: var(--brand-glow);
   position: relative;
   padding-left: 14px;
 }
@@ -152,7 +196,7 @@ body.light-theme .switch input:checked ~ .switch-track .switch-thumb {
   height: 7px;
   border-radius: 999px;
   background: linear-gradient(135deg, var(--sage-bright), var(--slate-bright));
-  box-shadow: 0 0 6px 1px rgba(191, 230, 200, 0.55);
+  box-shadow: var(--dot-glow);
 }
 
 .header-icon {
@@ -178,6 +222,16 @@ body.light-theme .switch input:checked ~ .switch-track .switch-thumb {
 }
 
 .header-icon:active { transform: scale(0.9); }
+
+.header-icon .material-symbols-outlined {
+  display: inline-block;
+  animation: unclutterIconPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes unclutterIconPop {
+  0% { transform: scale(0.4) rotate(-25deg); opacity: 0; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
 
 main {
   width: 100%;
@@ -260,12 +314,12 @@ main {
 .state-btn.active {
   border-color: var(--sage-muted);
   background: linear-gradient(135deg, var(--sage-muted), var(--slate-muted));
-  color: var(--label-bright);
+  color: var(--on-primary);
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
 }
 
 .state-btn.active .icon {
-  color: var(--label-bright);
+  color: var(--on-primary);
 }
 
 .section { margin-bottom: 20px; }
@@ -427,7 +481,7 @@ main {
   width: 100%;
   border: 1px solid var(--outline-variant);
   border-radius: 9px;
-  color: var(--label-bright);
+  color: var(--on-primary);
   background: linear-gradient(135deg, var(--sage-muted), var(--slate-muted));
   font: 700 12px "Manrope", sans-serif;
   transition: transform 0.12s ease, filter 0.15s ease, box-shadow 0.15s ease;
@@ -477,6 +531,12 @@ main {
 
 .speed-control select:not(:disabled):hover {
   filter: brightness(1.15);
+}
+
+.speed-control select option {
+  background: #ffffff;
+  color: #1a1a1a;
+  font-weight: 700;
 }
 
 .reader-status {
