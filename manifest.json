@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Unclutter - Calm Mode",
+  "name": "UNCLUTTER - The Calm Mode",
   "version": "0.1.0",
   "description": "Transforms any webpage based on your current cognitive state.",
   "permissions": ["activeTab", "scripting", "storage", "tts"],
